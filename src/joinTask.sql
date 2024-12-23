@@ -123,24 +123,82 @@ select group_name, count(students.id) from groups join students on groups.id = s
 select students.id, first_name, gender, group_name  from students join groups on students.group_id = groups.id where groups.id=4 order by first_name desc;
 
 --Tasks(Query) Course
+-- 1. Получите все записи таблицы groups;
+select * from groups;
+-- 2. Получите общее количество записей таблицы groups
+select count(*) from groups;
+-- 3. Выведите группы их курсы
+select * from groups inner join courses c on groups.id = c.group_id;
+-- 4. Выведите курсы групп у которых курс начался с 202011 по 202333
+select * from courses join groups g on g.id = courses.group_id where start_date between '2020-01-01' and '2023-03-03';
+-- 5. Выведите имена, дату рождения студентов , которые родились с 198011 по 20041212, и названиегруппы
+select first_name, date_of_birth, group_name from students join groups g on students.group_id = g.id  where date_of_birth between '1980-01-01' and '2004-12-12';
+-- 6. Вывести полное имя, возраст, почту студентов и название группы, где айди группы равен 3
+select concat(first_name,last_name) as full_name, age (current_date, date_of_birth), email, group_name from students join groups on students.group_id = groups.id where groups.id=3;
+-- 7. Вывести все курсы одной группы, где название группы 'Java-13'
+select * from courses join groups on courses.group_id = groups.id where group_name = 'Java 13';
+-- 8. Вывести название всех групп и количество студентов в группе
+select group_name, count(students.id) from groups join students on groups.id = students.group_id group by group_name;
+-- 9.Вывести название всех групп и количество студентов в группе, если в группе больше 4 студентов
+select group_name, count(students.id) from groups join students on groups.id = students.group_id group by group_name having count(students.id)>4;
+-- 10. Отсортируйте имена студентов группы по убыванию, где айди группы равна 4 и выведите айдистудента, имя, пол и название группы
+select students.id, first_name, gender, group_name  from students join groups on students.group_id = groups.id where groups.id=4 order by first_name desc;
+
+--Tasks(Query) Course
 --1. Вывести все курсы
 select * from courses;
 --2. Вывести все уроки курса 'Technical English'
 select * from courses where course_name= 'Technical English';
---3. Вывести количество всех студентов курса id  4
-
+--3. Вывести количество всех студентов курса id = 4
+select count(*) as count_students from students where group_id in (select group_id from courses where id =4);
 --4. Вывести имя, почту, специализацию ментора и название курса где курс айди равен 2
-
+select m.first_name, m.email, m.specialization, c.course_name from mentors m join courses c on m.course_id = c.id where c.id=2;
 --5. Посчитaть сколько менторов в каждом курсе
-
+select course_name, count(m.id) as count_of_mentors from courses left join mentors m on courses.id = m.course_id group by course_name;
 --6. Сгруппируйте и посчитайте менторов в каждом курсе и выведите только те курсы, где в курсебольше 2 менторов
-
+select course_name, count(m.id) as count_of_mentors from courses left join mentors m on courses.id = m.course_id group by course_name having count(m.id)>2;
 --7. Вывести название, дату и полное имя ментора, все курсы которые начинаются с 202011 по 202333
 
 --8. Вывести имя, почту, возраст студентов курса 'Java 13 core'
-
+select first_name, email, from students;
 --9. Вывести тот курс  где нет ментора
-
+select course_name from courses left join mentors on courses.id = mentors.course_id where mentors.id is null;
 --10.Вывести тот курс где нет уроков
-
+select course_name from courses left join lessons on courses.id = lessons.course_id where lessons.id is null;
 --11.Вывести тот курс  где нет студентов
+select course_name from courses left join students on courses.id = students.group_id where students.id is null;
+
+-- Tasks(Query) Students
+-- 1. Вывести общее количество студентов
+select count(*) as count_of_students from students;
+-- 2. Вывести имя, почту и пол студента, айди группы которого равна 2
+select first_name, email, gender from students where group_id=2;
+-- 3. Вывести группу студента, айди которого равна 4
+select groups.group_name from students join groups on students.group_id = groups.id where students.id=4;
+-- 4. Сгруппируйте студентов по gender и выведите общее количество gender
+select gender, count(*) as count_of_gender from students group by gender ;
+-- 5. Найдите студента с айди 8 и обновите его данные
+update students set first_name = 'Test', last_name = 'Testov', email = 'test@gmail.com', gender = 'Male', date_of_birth = '1997-07-09' where id = 8;
+-- 6. Найдите самого старшего студента курса, айди курса которого равна 5
+
+-- 7. Добавьте unique constraint email в столбец таблицы students
+alter table students add constraint su unique (email);
+-- 8. Добавьте check constraint gender в столбец таблицы mentors
+alter table mentors add constraint check_gender check (gender in (gender in ('Male', 'Female')));
+-- 9. Добавьте check constraint gender в столбец таблицы students
+alter table students ADD CONSTRAINT check_gender CHECK (gender IN ('male', 'female'));
+
+
+
+--Tasks(Query) Lessons
+--1. Вывести все уроки
+select * from lessons;
+--2.Получить все уроки студента, айди которого равен 2
+select * from lessons where id=2;
+--3.Посчитать уроки каждой группы и вывести название группы и количество уроков, где количество уроков больше чем 2
+
+--4.Отсортировать уроки студента по названию, где айди студента равна 7
+
+--5.Получить все уроки курса, где название курса 'Python kids'
+
+--6.Получить все уроки ментора, айди которого равен 5
