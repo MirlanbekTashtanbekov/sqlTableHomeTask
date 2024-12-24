@@ -196,9 +196,36 @@ select * from lessons;
 --2.Получить все уроки студента, айди которого равен 2
 select * from lessons where id=2;
 --3.Посчитать уроки каждой группы и вывести название группы и количество уроков, где количество уроков больше чем 2
-
+select g.group_name, count(l.id) as lesson_count from groups g join students s on g.id = s.group_id join courses c ON s.group_id = c.group_id join
+                                                      lessons l on c.id = l.course_id group by g.group_name having count(l.id) > 2;
 --4.Отсортировать уроки студента по названию, где айди студента равна 7
-
+select lesson_name from students s join courses on s.group_id= courses.group_id join
+                        lessons l on courses.id = l.course_id where s.id = 7 order by l.lesson_name;
 --5.Получить все уроки курса, где название курса 'Python kids'
-
+select * from lessons join courses c on c.id = lessons.course_id where c.course_name='Python kids';
 --6.Получить все уроки ментора, айди которого равен 5
+select * from lessons join mentors m on lessons.course_id = m.course_id where m.id =5;
+
+--Tasks(Query) Mentors
+--1. Вывести средний возраст всех менторов
+-- select avg(age) from mentors; -- запрос не работает или не смог потму что нет дата рождение менторов или возраст
+--2. Вывести имя, почту и специализацию ментора группы 'Java-9'
+select first_name, email, specialization from mentors join courses c on mentors.course_id = c.id
+                                                      join groups g on c.group_id = g.id where g.group_name='Java 9';
+--3. Вывести всех менторов, чей опыт превышает 1 год
+select * from mentors where experience>1;
+--4. Вывести ментора у которого нет курса
+select * from mentors where course_id is null;
+--5. Вывести айди, имя ментора и его студентов
+--select id,first_name from mentors;
+--6. Посчитать сколько студентов у каждого ментора, и вывести полное имя ментора и количество его студентов
+
+--7. Вывести ментора у которого нет студентов
+--select * from mentors join courses c on mentors.course_id = c.id join students s on c.group_id = s.group_id group by mentors.id having count(s.id)=0;
+--8. Вывести ментора у которого студентов больше чем 2
+
+--9. Вывести курсы ментора с айди 5
+select c.course_name from mentors m join courses c on m.course_id = c.id where m.id = 5;
+--10.Вывести все уроки ментора, айди которого равен 5
+select lesson_name from mentors join courses c on c.id = mentors.course_id
+                                join lessons l on c.id = l.course_id where mentors.id =5;
